@@ -9,8 +9,11 @@
 - (void)getSubscriptions: (CDVInvokedUrlCommand *)command;
 - (void)subscribe: (CDVInvokedUrlCommand *)command;
 - (void)unsubscribe: (CDVInvokedUrlCommand *)command;
+- (void)resetBadge: (CDVInvokedUrlCommand *)command;
+- (void)trackEvent: (CDVInvokedUrlCommand *)command;
 
 @end
 
 @interface AppDelegate (CDVParsePlugin)
+- (void)handleRemoteNotification:(UIApplication *)application payload:(NSDictionary *)payload;
 @end
