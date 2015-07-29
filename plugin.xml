@@ -37,6 +37,13 @@
               <category android:name="$PACKAGE_NAME" />
             </intent-filter>
           </receiver>
+          <receiver android:exported="false" android:name="com.parse.ParsePushBroadcastReceiver">
+            <intent-filter>
+              <action android:name="com.parse.push.intent.RECEIVE" />
+              <action android:name="com.parse.push.intent.DELETE" />
+              <action android:name="com.parse.push.intent.OPEN" />
+            </intent-filter>
+          </receiver>
         </config-file>
         
         <config-file target="AndroidManifest.xml" parent="/manifest">
