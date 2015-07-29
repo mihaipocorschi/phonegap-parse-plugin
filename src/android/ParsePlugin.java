@@ -15,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.parse.Parse;
+import com.parse.ParseAnalytics;
 import com.parse.ParseInstallation;
 import com.parse.ParsePush;
 import com.parse.ParseCrashReporting;
@@ -107,6 +108,7 @@ public class ParsePlugin extends CordovaPlugin {
         cordova.getThreadPool().execute(new Runnable() {
             public void run() {
                 ParseInstallation.getCurrentInstallation().saveInBackground();
+                ParseAnalytics.trackAppOpenedInBackground(cordova.getActivity().getIntent());
                 callbackContext.success();
             }
         });

@@ -38,7 +38,7 @@ public class ParsePluginReceiver extends ParsePushBroadcastReceiver
 
         if (pushData != null) {
             if (ParsePlugin.isInForeground()) {
-                ParseAnalytics.trackAppOpened(intent);
+                ParseAnalytics.trackAppOpenedInBackground(intent);
                 ParsePlugin.javascriptEventCallback(pushData);
             } else {
                 super.onPushOpen(context, intent);
