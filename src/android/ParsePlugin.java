@@ -3,7 +3,10 @@ package org.apache.cordova.core;
 import android.app.Application;
 import android.util.Log;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
@@ -30,6 +33,7 @@ public class ParsePlugin extends CordovaPlugin {
     private static final String ACTION_SUBSCRIBE = "subscribe";
     private static final String ACTION_UNSUBSCRIBE = "unsubscribe";
     private static final String ACTION_REGISTER_CALLBACK = "registerCallback";
+    private static final String ACTION_TRACK_EVENT = "trackEvent";
 
     private static CordovaWebView sWebView;
     private static String sEventCallback = null;
@@ -60,30 +64,34 @@ public class ParsePlugin extends CordovaPlugin {
         if (action.equals(ACTION_REGISTER_CALLBACK)) {
             this.registerCallback(callbackContext, args);
             return true;
-        }
-        if (action.equals(ACTION_INITIALIZE)) {
+        } else if (action.equals(ACTION_INITIALIZE)) {
             this.initialize(callbackContext, args);
             return true;
-        }
-        if (action.equals(ACTION_GET_INSTALLATION_ID)) {
+        } else if (action.equals(ACTION_GET_INSTALLATION_ID)) {
             this.getInstallationId(callbackContext);
             return true;
-        }
-
-        if (action.equals(ACTION_GET_INSTALLATION_OBJECT_ID)) {
+        } else if (action.equals(ACTION_GET_INSTALLATION_OBJECT_ID)) {
             this.getInstallationObjectId(callbackContext);
             return true;
-        }
-        if (action.equals(ACTION_GET_SUBSCRIPTIONS)) {
+        } else if (action.equals(ACTION_GET_SUBSCRIPTIONS)) {
             this.getSubscriptions(callbackContext);
             return true;
-        }
-        if (action.equals(ACTION_SUBSCRIBE)) {
+        } else if (action.equals(ACTION_SUBSCRIBE)) {
             this.subscribe(args.getString(0), callbackContext);
             return true;
-        }
-        if (action.equals(ACTION_UNSUBSCRIBE)) {
+        } else if (action.equals(ACTION_UNSUBSCRIBE)) {
             this.unsubscribe(args.getString(0), callbackContext);
+            return true;
+        } else if (action.equals(ACTION_TRACK_EVENT)) {
+            Map<String, String> dimensions = new HashMap<String, String>();
+            JSONObject object = args.getJSONObject(1);
+            Iterator<String> iter = object.keys();
+            while (iter.hasNext()) {
+                String key = iter.next();
+                Object value = object.get(key);
+                dimensions.put(key, value.toString());
+            }
+            this.trackEvent(args.getString(0), dimensions, callbackContext);
             return true;
         }
         return false;
@@ -154,6 +162,15 @@ public class ParsePlugin extends CordovaPlugin {
         cordova.getThreadPool().execute(new Runnable() {
             public void run() {
                 ParsePush.unsubscribeInBackground(channel);
+                callbackContext.success();
+            }
+        });
+    }
+
+    private void trackEvent(final String name, final Map<String, String> dimensions, final CallbackContext callbackContext) {
+        cordova.getThreadPool().execute(new Runnable() {
+            public void run() {
+                ParseAnalytics.trackEventInBackground(name, dimensions);
                 callbackContext.success();
             }
         });

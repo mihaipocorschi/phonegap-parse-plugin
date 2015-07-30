@@ -10,7 +10,7 @@ This plugin exposes native API push services to JS:
 * <a href="https://www.parse.com/docs/android/api/com/parse/PushService.html#getSubscriptions(android.content.Context)">getSubscriptions</a>
 * <a href="https://www.parse.com/docs/android/api/com/parse/PushService.html#subscribe(android.content.Context, java.lang.String, java.lang.Class, int)">subscribe</a>
 * <a href="https://www.parse.com/docs/android/api/com/parse/PushService.html#unsubscribe(android.content.Context, java.lang.String)">unsubscribe</a>
-* <a href="https://parse.com/docs/osx/api/Classes/PFAnalytics.html#//api/name/trackEvent:dimensions:">trackEvent (iOS only)</a>
+* <a href="https://parse.com/docs/osx/api/Classes/PFAnalytics.html#//api/name/trackEvent:dimensions:">trackEvent</a>
 
 As well as other utility methods:
 * registerCallback: allows us to get the notification back in javascript
