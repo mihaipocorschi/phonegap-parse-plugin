@@ -267,6 +267,10 @@ void MethodSwizzle(Class c, SEL originalSelector) {
 
     // send the callback to the webview
     if (ecb) {
+        // The properties we're looking for ('alert', etc.) are (always ?) nested in the 'aps'
+        // key so clone it top level to match other platforms
+        [payload addEntriesFromDictionary:[payload objectForKey:@"aps"]];
+        
         NSString *jsString = [NSString stringWithFormat:@"%@(%@);", ecb, [self getJson:payload]];
 
         if ([self.viewController.webView respondsToSelector:@selector(stringByEvaluatingJavaScriptFromString:)]) {
