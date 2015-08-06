@@ -3,6 +3,7 @@ package org.apache.cordova.core;
 import android.app.Application;
 import android.util.Log;
 
+import java.util.Dictionary;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -35,14 +36,30 @@ public class ParsePlugin extends CordovaPlugin {
     private static final String ACTION_REGISTER_CALLBACK = "registerCallback";
     private static final String ACTION_TRACK_EVENT = "trackEvent";
 
+    private static final String PARSE_APP_ID = "parse_app_id";
+    private static final String PARSE_CLIENT_KEY = "parse_client_key";
+    private static final String PARSE_JS_KEY = "parse_js_key";
+
     private static CordovaWebView sWebView;
     private static String sEventCallback = null;
     private static boolean sForeground = false;
     private static JSONObject sLaunchNotification = null;
+    private static JSONObject sKeys = null;
 
     public static void initializeParseWithApplication(Application app) {
-        String appId = getStringByKey(app, "parse_app_id");
-        String clientKey = getStringByKey(app, "parse_client_key");
+        String appId = getStringByKey(app, PARSE_APP_ID);
+        String clientKey = getStringByKey(app, PARSE_CLIENT_KEY);
+        String jsKey = getStringByKeyOpt(app, PARSE_JS_KEY, "");
+
+        // Save in static var for later use by plugin
+        sKeys = new JSONObject();
+        try {
+            sKeys.put(PARSE_APP_ID, appId);
+            sKeys.put(PARSE_CLIENT_KEY, clientKey);
+            sKeys.put(PARSE_JS_KEY, jsKey);
+        } catch (JSONException e) {
+            Log.d(TAG, "initializeParseWithApplication: Failed to store parse keys in JSON object");
+        }
 
         // Initialize Crash Reporting.
         ParseCrashReporting.enable(app);
@@ -57,6 +74,11 @@ public class ParsePlugin extends CordovaPlugin {
     private static String getStringByKey(Application app, String key) {
         int resourceId = app.getResources().getIdentifier(key, "string", app.getPackageName());
         return app.getString(resourceId);
+    }
+
+    private static String getStringByKeyOpt(Application app, String key, String opt) {
+        int resourceId = app.getResources().getIdentifier(key, "string", app.getPackageName());
+        return (resourceId == 0) ? opt : app.getString(resourceId);
     }
 
     @Override
@@ -117,7 +139,7 @@ public class ParsePlugin extends CordovaPlugin {
             public void run() {
                 ParseInstallation.getCurrentInstallation().saveInBackground();
                 ParseAnalytics.trackAppOpenedInBackground(cordova.getActivity().getIntent());
-                callbackContext.success();
+                callbackContext.success(sKeys);
             }
         });
     }

@@ -7,8 +7,9 @@
 
 static NSString * ecb = nil;
 static NSMutableDictionary * launchNotification = nil;
-static NSString * const PPAppId = @"appId";
-static NSString * const PPClientKey = @"clientKey";
+static NSDictionary * keys = nil;
+static NSString * const PPAppId = @"parse_app_id";
+static NSString * const PPClientKey = @"parse_client_key";
 static NSString * const PPReceivedInForeground = @"receivedInForeground";
 static NSString * const PPHash = @"push_hash";
 
@@ -62,13 +63,6 @@ static NSString * const PPHash = @"push_hash";
     [self.commandDelegate runInBackground:^{
         CDVPluginResult* pluginResult = nil;
 
-        NSString *appId = [command.arguments objectAtIndex:0];
-        NSString *clientKey = [command.arguments objectAtIndex:1];
-        [[NSUserDefaults standardUserDefaults] setObject:appId forKey:PPAppId];
-        [[NSUserDefaults standardUserDefaults] setObject:clientKey forKey:PPClientKey];
-
-        [Parse setApplicationId:appId clientKey:clientKey];
-
         // Register for notifications
         if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerUserNotificationSettings:)]) {
             UIUserNotificationSettings *settings = [UIUserNotificationSettings
@@ -90,7 +84,7 @@ static NSString * const PPHash = @"push_hash";
         if (error != nil) {
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:[error localizedDescription]];
         } else {
-            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:keys];
         }
 
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -231,12 +225,15 @@ void MethodSwizzle(Class c, SEL originalSelector) {
     
     [ParseCrashReporting enable];
 
-    NSString *appId = [[NSUserDefaults standardUserDefaults] stringForKey:PPAppId];
-    NSString *clientKey = [[NSUserDefaults standardUserDefaults] stringForKey:PPClientKey];
+    NSDictionary * parseConfig = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Parse-Config" ofType:@"plist"]];
 
-    if (appId && clientKey) {
-        [Parse setApplicationId:appId clientKey:clientKey];
-    }
+    // Save in static var for later use by plugin
+    keys = [parseConfig objectForKey:@"Keys"];
+    
+    NSString *appId = [keys objectForKey:PPAppId];
+    NSString *clientKey = [keys objectForKey:PPClientKey];
+
+    [Parse setApplicationId:appId clientKey:clientKey];
 
     NSDictionary *launchPayload = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
 
