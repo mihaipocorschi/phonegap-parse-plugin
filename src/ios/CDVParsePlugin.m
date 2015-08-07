@@ -1,7 +1,6 @@
 #import "CDVParsePlugin.h"
 #import <Cordova/CDV.h>
 #import <Parse/Parse.h>
-#import <ParseCrashReporting/ParseCrashReporting.h>
 #import <objc/runtime.h>
 #import <objc/message.h>
 
@@ -222,8 +221,6 @@ void MethodSwizzle(Class c, SEL originalSelector) {
     [self swizzled_application:application didFinishLaunchingWithOptions:launchOptions];
 
     [Parse enableLocalDatastore];
-    
-    [ParseCrashReporting enable];
 
     NSDictionary * parseConfig = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Parse-Config" ofType:@"plist"]];
 

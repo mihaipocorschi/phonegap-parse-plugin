@@ -22,7 +22,6 @@ import com.parse.Parse;
 import com.parse.ParseAnalytics;
 import com.parse.ParseInstallation;
 import com.parse.ParsePush;
-import com.parse.ParseCrashReporting;
 
 public class ParsePlugin extends CordovaPlugin {
 
@@ -60,9 +59,6 @@ public class ParsePlugin extends CordovaPlugin {
         } catch (JSONException e) {
             Log.d(TAG, "initializeParseWithApplication: Failed to store parse keys in JSON object");
         }
-
-        // Initialize Crash Reporting.
-        ParseCrashReporting.enable(app);
 
         // Enable Local Datastore.
         Parse.enableLocalDatastore(app);
