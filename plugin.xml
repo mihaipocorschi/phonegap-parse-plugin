@@ -78,7 +78,7 @@
         </config-file>
         <header-file src="src/ios/CDVParsePlugin.h" />
         <source-file src="src/ios/CDVParsePlugin.m" />
-
+        <resource-file src="src/ios/beep.wav" />
         <resource-file src="src/ios/Parse-Config.plist" />
         <config-file target="*/Parse-Config.plist" parent="Keys">
             <dict>
