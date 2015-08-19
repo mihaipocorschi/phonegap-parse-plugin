@@ -22,6 +22,9 @@ import com.parse.Parse;
 import com.parse.ParseAnalytics;
 import com.parse.ParseInstallation;
 import com.parse.ParsePush;
+import com.parse.ParseUser;
+import com.parse.LogInCallback;
+import com.parse.ParseException;
 
 public class ParsePlugin extends CordovaPlugin {
 
@@ -32,6 +35,8 @@ public class ParsePlugin extends CordovaPlugin {
     private static final String ACTION_GET_SUBSCRIPTIONS = "getSubscriptions";
     private static final String ACTION_SUBSCRIBE = "subscribe";
     private static final String ACTION_UNSUBSCRIBE = "unsubscribe";
+    private static final String ACTION_SET_CURRENT_USER = "setCurrentUser";
+    private static final String ACTION_SET_INSTALLATION_USER = "setInstallationUser";
     private static final String ACTION_REGISTER_CALLBACK = "registerCallback";
     private static final String ACTION_TRACK_EVENT = "trackEvent";
 
@@ -100,6 +105,12 @@ public class ParsePlugin extends CordovaPlugin {
         } else if (action.equals(ACTION_UNSUBSCRIBE)) {
             this.unsubscribe(args.getString(0), callbackContext);
             return true;
+		} else if (action.equals(ACTION_SET_CURRENT_USER)) {
+			this.setCurrentUser(args.getString(0), callbackContext);
+			return true;
+ 		} else if (action.equals(ACTION_SET_INSTALLATION_USER)) {
+ 			this.setInstallationUser(callbackContext);
+ 			return true;
         } else if (action.equals(ACTION_TRACK_EVENT)) {
             Map<String, String> dimensions = new HashMap<String, String>();
             JSONObject object = args.getJSONObject(1);
@@ -181,6 +192,32 @@ public class ParsePlugin extends CordovaPlugin {
             public void run() {
                 ParsePush.unsubscribeInBackground(channel);
                 callbackContext.success();
+            }
+        });
+    }
+
+    private void setCurrentUser(final String sessionToken, final CallbackContext callbackContext) {
+        cordova.getThreadPool().execute(new Runnable() {
+            public void run() {
+                ParseUser.becomeInBackground(sessionToken, new LogInCallback() {
+                 public void done(ParseUser user, ParseException e) {
+                     if (user != null) {
+                         callbackContext.success();
+                     } else {
+                        callbackContext.error("Error setting current user.");
+                     }
+                 }
+                });
+            }
+        });
+    }
+
+    private void setInstallationUser(final CallbackContext callbackContext) {
+        cordova.getThreadPool().execute(new Runnable() {
+            public void run() {
+               ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+               installation.put("user",ParseUser.getCurrentUser());
+               installation.saveInBackground();
             }
         });
     }

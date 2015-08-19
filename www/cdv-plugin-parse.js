@@ -70,6 +70,26 @@ var parsePlugin = {
         );
     },
 
+    setCurrentUser: function(sessionToken, successCallback, errorCallback) {
+        cordova.exec(
+            successCallback,
+            errorCallback,
+            'ParsePlugin',
+            'setCurrentUser',
+            [ sessionToken ]
+        );
+    },
+
+    setInstallationUser: function(successCallback, errorCallback) {
+        cordova.exec(
+            successCallback,
+            errorCallback,
+            'ParsePlugin',
+            'setInstallationUser',
+            []
+        );
+    },
+
     // iOS only
     resetBadge: function(successCallback, errorCallback) {
         cordova.exec(

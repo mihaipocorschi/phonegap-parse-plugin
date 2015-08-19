@@ -141,6 +141,31 @@ static NSString * const PPHash = @"push_hash";
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
+- (void)setCurrentUser: (CDVInvokedUrlCommand *)command
+{
+    CDVPluginResult* pluginResult = nil;
+    NSString *sessionToken = [command.arguments objectAtIndex:0];
+    [PFUser becomeInBackground:sessionToken block:^(PFUser *user, NSError *error) {
+        if (error) {
+            NSLog(@"getJson error: %@", error.localizedDescription);
+        } else {
+            // The current user is now set to user.
+        }
+    }];
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void)setInstallationUser: (CDVInvokedUrlCommand *)command
+{
+    CDVPluginResult* pluginResult = nil;
+    PFInstallation *installation = [PFInstallation currentInstallation];
+    installation[@"user"] = [PFUser currentUser];
+    [installation saveInBackground];
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
 @end
 
 @implementation AppDelegate (CDVParsePlugin)
