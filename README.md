@@ -10,6 +10,8 @@ This plugin exposes native API push services to JS:
 * <a href="https://www.parse.com/docs/android/api/com/parse/PushService.html#getSubscriptions(android.content.Context)">getSubscriptions</a>
 * <a href="https://www.parse.com/docs/android/api/com/parse/PushService.html#subscribe(android.content.Context, java.lang.String, java.lang.Class, int)">subscribe</a>
 * <a href="https://www.parse.com/docs/android/api/com/parse/PushService.html#unsubscribe(android.content.Context, java.lang.String)">unsubscribe</a>
+* <a href="https://parse.com/docs/android/guide#users-setting-the-current-user">setCurrentUser</a>
+* <a href="https://parse.com/docs/android/guide#push-notifications-using-advanced-targeting">setInstallationUser</a>
 * <a href="https://parse.com/docs/osx/api/Classes/PFAnalytics.html#//api/name/trackEvent:dimensions:">trackEvent</a>
 
 As well as other utility methods:
@@ -134,6 +136,18 @@ Usage
 	});
 
 	parsePlugin.unsubscribe('SampleChannel', function(msg) {
+		alert('OK');
+	}, function(e) {
+		alert('error');
+	});
+	
+	parsePlugin.setCurrentUser('<user-session-token>', function() {
+		alert('OK');
+	}, function(e) {
+		alert('error');
+	});
+	
+	parsePlugin.setInstallationUser(function() {
 		alert('OK');
 	}, function(e) {
 		alert('error');
